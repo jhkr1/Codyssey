@@ -29,7 +29,33 @@
 
 ---
 
-## 3. 수행 체크리스트
+## 3. 프로젝트 디렉토리 구조
+
+```text
+Building_AI&SW_Development_Workstations/
+├── README.md
+├── images/
+│   ├── port.png
+│   ├── bind.png
+│   └── volume.png
+├── practice/
+│   └── file.txt
+└── my-web/
+    ├── Dockerfile
+    └── app/
+        └── index.html
+```
+
+### 구조 설계 기준
+
+* practice/: 터미널 및 권한 실습
+* my-web/: Docker 기반 웹 서버 구성
+* images/: 실행 결과 증거 저장
+* README.md: 전체 과정 문서화
+
+---
+
+## 4. 수행 체크리스트
 
 * [x] 터미널 기본 조작
 * [x] 파일 권한 실습
@@ -45,7 +71,7 @@
 
 ---
 
-## 4. 터미널 조작 로그
+## 5. 터미널 조작 로그
 
 ```bash
 $ cd ~/Desktop/Building_AI\&SW_Development_Workstations
@@ -63,7 +89,7 @@ $ rm moved.txt
 
 ---
 
-## 5. 파일 권한 실습
+## 6. 파일 권한 실습
 
 ```bash
 $ ls -l file.txt
@@ -80,7 +106,7 @@ $ ls -la
 
 ---
 
-## 6. Docker 설치 및 점검
+## 7. Docker 설치 및 점검
 
 ```bash
 $ docker --version
@@ -89,7 +115,7 @@ $ docker info
 
 ---
 
-## 7. Docker 운영 명령
+## 8. Docker 운영 명령
 
 ```bash
 $ docker images
@@ -109,7 +135,7 @@ a594660d9f0a   hello-world       Exited
 
 ---
 
-## 8. hello-world 실행
+## 9. hello-world 실행
 
 ```bash
 $ docker run hello-world
@@ -121,7 +147,7 @@ Hello from Docker!
 
 ---
 
-## 9. Ubuntu 컨테이너 실행
+## 10. Ubuntu 컨테이너 실행
 
 ```bash
 $ docker run -it ubuntu bash
@@ -131,7 +157,7 @@ $ docker run -it ubuntu bash
 
 ---
 
-## 10. Dockerfile 기반 웹 서버 구축
+## 11. Dockerfile 기반 웹 서버 구축
 
 ### Dockerfile
 
@@ -144,10 +170,10 @@ COPY ./app /usr/share/nginx/html
 
 ### 커스텀 포인트
 
-* nginx:alpine 기반 경량 웹 서버 환경 사용
+* nginx:alpine 기반 경량 웹 서버 사용
 * LABEL을 통한 이미지 메타데이터 정의
 * ENV를 통한 환경 변수 설정
-* COPY를 통해 정적 웹 파일을 서버 경로에 복사
+* COPY를 통한 웹 파일 배포
 
 ---
 
@@ -161,22 +187,20 @@ $ curl http://localhost:8080
 
 ---
 
-## 11. 포트 매핑 검증
+## 12. 포트 매핑 검증
 
 ```bash
 $ curl http://localhost:8080
 ```
 
-브라우저 접속: http://localhost:8080
-
-포트 매핑은 컨테이너 내부 서비스에 외부에서 접근하기 위해 필요하며,
-호스트 포트와 컨테이너 포트를 연결하여 웹 서버에 접근할 수 있도록 한다.
+포트 매핑은 컨테이너 내부 서비스에 외부에서 접근하기 위해 필요하며
+호스트 포트와 컨테이너 포트를 연결하여 웹 서버 접근을 가능하게 한다.
 
 ![포트매핑](./images/port.png)
 
 ---
 
-## 12. 바인드 마운트 검증
+## 13. 바인드 마운트 검증
 
 ```bash
 $ docker run -d -p 8081:80 --name mission-bind-8081 \
@@ -194,14 +218,14 @@ $ curl http://localhost:8081
 $ curl http://localhost:8081
 ```
 
-바인드 마운트는 호스트 파일 시스템과 컨테이너를 직접 연결하여
+바인드 마운트는 호스트와 컨테이너를 연결하여
 파일 변경이 즉시 반영되도록 한다.
 
 ![바인드마운트](./images/bind.png)
 
 ---
 
-## 13. Docker 볼륨 영속성 검증
+## 14. Docker 볼륨 영속성 검증
 
 ```bash
 $ docker volume create mission-data
@@ -224,68 +248,98 @@ hello-volume
 
 ---
 
-## 14. Docker 로그 확인
+## 15. Docker 로그 확인
 
 ```bash
 $ docker logs mission-web-8080
-```
-
-```text
-nginx/1.29.7
-start worker processes
-GET / HTTP/1.1 200
-GET /favicon.ico 404
 ```
 
 웹 요청이 정상적으로 처리되고 로그가 기록됨을 확인하였다.
 
 ---
 
-## 15. 경로 개념
+## 16. 이미지와 컨테이너의 차이
+
+| 구분 | 이미지        | 컨테이너       |
+| -- | ---------- | ---------- |
+| 개념 | 실행 가능한 템플릿 | 실행 중인 인스턴스 |
+| 상태 | 불변         | 변경 가능      |
+| 역할 | 환경 정의      | 실제 실행      |
+
+* 빌드: Dockerfile → 이미지 생성
+* 실행: 이미지 → 컨테이너 실행
+* 변경: 컨테이너 수정은 이미지에 반영되지 않음
+
+---
+
+## 17. 경로 개념
 
 * 절대 경로: /Users/...
 * 상대 경로: ./app
 
-Docker에서는 경로를 명확하게 지정하기 위해 절대 경로 사용이 안정적이다.
+Docker에서는 명확한 경로 지정이 중요하므로 절대 경로 사용이 안정적이다.
 
 ---
 
-## 16. 검증 방법
+## 18. 재현 가능한 실행 방법
 
-| 항목        | 검증 방법               |
-| --------- | ------------------- |
-| Docker 동작 | hello-world 실행      |
-| 웹 서버      | curl localhost:8080 |
-| 포트 매핑     | 브라우저 접속             |
-| 바인드 마운트   | 파일 수정 즉시 반영         |
-| 볼륨        | 컨테이너 삭제 후 데이터 유지    |
-
----
-
-## 17. 트러블슈팅
-
-### 1. Dockerfile not found
-
-* 원인: 잘못된 디렉토리에서 build 실행
-* 해결: my-web 디렉토리에서 실행
+```bash
+docker build -t mission-web:1.0 .
+docker run -d -p 8080:80 mission-web:1.0
+docker run -d -p 8081:80 -v "/Users/.../app:/usr/share/nginx/html" nginx:alpine
+docker volume create mission-data
+```
 
 ---
 
-### 2. invalid mode 오류
+## 19. 포트 충돌 트러블슈팅
 
-* 원인: 경로에 ":" 포함
-* 해결: 폴더명 변경
+### 원인
+
+동일 포트를 사용하는 컨테이너 또는 프로세스 존재
+
+### 확인
+
+```bash
+docker ps
+lsof -i :8080
+```
+
+### 해결
+
+```bash
+docker stop <container>
+docker run -p 8081:80
+```
 
 ---
 
-### 3. 줄바꿈 오류
+## 20. 데이터 영속성 문제와 해결
 
-* 원인: "" 뒤 공백
-* 해결: 명령어 줄바꿈 수정
+컨테이너 삭제 시 내부 데이터는 사라진다.
+이를 해결하기 위해 다음 방법을 사용한다.
+
+* 바인드 마운트: 호스트와 연결하여 실시간 반영
+* Docker 볼륨: 컨테이너와 독립적으로 데이터 유지
 
 ---
 
-## 18. Git 설정 및 GitHub 연동
+## 21. 트러블슈팅 사례
+
+### bind mount 오류
+
+문제:
+invalid mode 오류 발생
+
+원인:
+경로에 ":" 포함
+
+해결:
+폴더명을 "&"로 변경
+
+---
+
+## 22. Git 설정 및 GitHub 연동
 
 ```bash
 $ git config --global user.name "이지헌"
@@ -293,17 +347,12 @@ $ git config --global user.email "wlgjs06061@naver.com"
 $ git config --list
 ```
 
-```text
-user.name=이지헌
-user.email=wlgjs0***@naver.com
-```
-
 Git은 로컬 버전 관리 도구이며, GitHub는 원격 협업 플랫폼이다.
 
 ---
 
-## 19. 결론
+## 23. 결론
 
-* Docker를 통해 실행 환경을 표준화할 수 있다
-* 바인드 마운트와 볼륨을 통해 데이터 관리 방식을 이해하였다
-* 재현 가능한 환경이 협업의 핵심이다
+Docker를 통해 실행 환경을 표준화할 수 있으며
+바인드 마운트와 볼륨을 통해 데이터 관리 방식을 이해하였다.
+재현 가능한 환경 구성이 협업의 핵심임을 확인하였다.
